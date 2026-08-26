@@ -149,8 +149,8 @@ typedef int             boolean;
 #endif
 
 /*
- * Interface defect recorded at the point a reader meets it: the guard below and the
- * macro it is meant to protect do not carry the same name.
+ * Interface defect: the guard below and the macro it is meant to protect do not carry
+ * the same name.
  *
  *   * The guard tests SIZE_arrisCmDevHttpClientSee - no trailing "d".
  *   * The macro the body defines is SIZE_arrisCmDevHttpClientSeed, with the "d".
@@ -168,14 +168,11 @@ typedef int             boolean;
  *      SIZE_arrisCmDevHttpClientSee is never defined by this header, so testing it
  *      is always false and must not be used as a feature test.
  *
- * The token is deliberately left as it stands. Correcting the guard changes a
- * preprocessor branch, which is a functional change to the interface and is out of
- * scope for a documentation change set; it is raised for a separately scoped change
- * against this repository. The repository specification records the same defect
- * under `Data Structures and Defines` (`docs/pages/halSpec.md`).
+ * The repository specification records the same defect under `Data Structures and
+ * Defines` (`docs/pages/halSpec.md`).
  */
 #ifndef SIZE_arrisCmDevHttpClientSee
-#define SIZE_arrisCmDevHttpClientSeed 8L /*!< Legacy element count, value 8L, carried for source compatibility with the Arris HTTP client seed field. No declaration in this header references it, and this interface does not relate it to the "at least 64 bytes" buffer requirement the seed accessors state, so a caller must size seed buffers from that requirement and not from this constant. Defect: the enclosing guard is spelled SIZE_arrisCmDevHttpClientSee, without the trailing "d", so it does not name the macro it guards. SIZE_arrisCmDevHttpClientSeed is the only name this header defines and therefore the only name a caller may test or use; SIZE_arrisCmDevHttpClientSee is never defined here, so testing it is always false. The guard is left as it stands because correcting it changes a preprocessor branch, which is a functional change to the interface and is raised as a separately scoped change; see the comment above this guard for the consequences. */
+#define SIZE_arrisCmDevHttpClientSeed 8L /*!< Legacy element count, value 8L, carried for source compatibility with the Arris HTTP client seed field. No declaration in this header references it, and this interface does not relate it to the "at least 64 bytes" buffer requirement the seed accessors state, so a caller sizes seed buffers from that requirement and not from this constant. */
 #endif
 
 #ifndef ERROR
@@ -347,10 +344,8 @@ mso_pwd_ret_status;
 *       derive it from this return value and has to obtain it elsewhere, for example
 *       by checking with mso_get_pod_seed() that a seed is retrievable at all.
 * @note Blocking behaviour is not specified. This interface does not state whether
-*       this call may block, and a caller must not assume either behaviour; the
-*       repository specification records it as unspecified under `Blocking calls`
-*       because the artefacts contradicted each other and the declaration settles
-*       neither. No response-time budget or timeout value is specified either, so a
+*       this call may block, and a caller must not assume either behaviour. No
+*       response-time budget or timeout value is specified either, so a
 *       caller that cannot tolerate an unbounded wait treats the call as potentially
 *       blocking and imposes its own bound.
 * @note Thread safety is not provided. There is no requirement on an implementation
