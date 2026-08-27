@@ -42,7 +42,7 @@
 * event notification, or performs any security operation other than validating a
 * candidate password. A caller takes the three declarations as the whole of the
 * contract; the repository specification states the same boundary under
-* `Description` (`docs/pages/halSpec.md`).
+* `Description` in the HAL specification.
 *
 * @par Basis of the statements in this header
 * Every behavioural statement in this file is derived from these declarations and
@@ -169,7 +169,7 @@ typedef int             boolean;
  *      is always false and must not be used as a feature test.
  *
  * The repository specification records the same defect under `Data Structures and
- * Defines` (`docs/pages/halSpec.md`).
+ * Defines` in the HAL specification.
  */
 #ifndef SIZE_arrisCmDevHttpClientSee
 #define SIZE_arrisCmDevHttpClientSeed 8L /*!< Legacy element count, value 8L, carried for source compatibility with the Arris HTTP client seed field. No declaration in this header references it, and this interface does not relate it to the "at least 64 bytes" buffer requirement the seed accessors state, so a caller sizes seed buffers from that requirement and not from this constant. */
@@ -238,7 +238,7 @@ mso_pwd_ret_status;
  * declares no error-detail accessor, sets no errno convention, and delivers no
  * asynchronous notification, so the returned value is the whole of the diagnosis a
  * caller receives. The repository specification states the same under `Internal
- * Error Handling` (`docs/pages/halSpec.md`).
+ * Error Handling` in the HAL specification.
  *
  * There are exactly two return domains:
  *
@@ -295,7 +295,7 @@ mso_pwd_ret_status;
 * @pre None imposed by this interface beyond the argument itself: no
 *      initialisation call is declared, so there is nothing to call first, and no
 *      call order is required (`Initialization and Startup` and `Method
-*      Sequencing` in `docs/pages/halSpec.md`). `pwd` must address a
+*      Sequencing` in the HAL specification). `pwd` must address a
 *      NUL-terminated string. If it does not - a NULL pointer, freed storage or an
 *      unterminated buffer - this interface states no outcome: no verdict is
 *      defined for an invalid argument, and it neither states that such a call is
@@ -350,7 +350,7 @@ mso_pwd_ret_status;
 *       blocking and imposes its own bound.
 * @note Thread safety is not provided. There is no requirement on an implementation
 *       to be thread safe, and the calling module is obliged to serialise its calls
-*       into this HAL (`Threading Model` in `docs/pages/halSpec.md`). The functions
+*       into this HAL (`Threading Model` in the HAL specification). The functions
 *       are expected to be reachable from several processes, so a vendor
 *       implementation must also protect shared state across process boundaries
 *       (`Process Model`); a caller cannot infer cross-process serialisation from its
@@ -389,7 +389,7 @@ mso_pwd_ret_status mso_validatepwd(char *pwd);
 * resulting password, so the effect of a successful call is observable only through
 * the verdicts mso_validatepwd() subsequently returns. Where the seed is held, and
 * whether it survives a restart, is a vendor matter this interface does not specify
-* (`Persistence Model` in `docs/pages/halSpec.md`). On newer broadband devices the
+* (`Persistence Model` in the HAL specification). On newer broadband devices the
 * implementation is required to decrypt the seed on demand when this function is
 * called; whether a given device is in that class is not reported by this interface,
 * so a caller cannot tell from the return value whether decryption took place.
@@ -466,7 +466,7 @@ mso_pwd_ret_status mso_validatepwd(char *pwd);
 *       which is a further reason not to assume this call returns promptly.
 * @note Thread safety is not provided. There is no requirement on an implementation to
 *       be thread safe, and the calling module is obliged to serialise its calls into
-*       this HAL (`Threading Model` in `docs/pages/halSpec.md`). The functions are
+*       this HAL (`Threading Model` in the HAL specification). The functions are
 *       expected to be reachable from several processes, so a vendor implementation
 *       must also protect shared state across process boundaries (`Process Model`).
 *       Two concurrent installs, or an install concurrent with a validation, are not
@@ -505,7 +505,7 @@ INT mso_set_pod_seed(char *pSeed);
 * The implementation obtains it either from the device configuration file or from the
 * `rdkbEncryptedClientSeed` SNMP OID; this interface does not select between the two
 * sources and the return value does not report which was used (`Optional Components`
-* in `docs/pages/halSpec.md`). What the caller holds on success is therefore a
+* in the HAL specification). What the caller holds on success is therefore a
 * cleartext credential, and the erasure obligation stated in the warnings below is
 * part of the contract rather than advice - together with the guarantee a caller needs
 * from its implementation before that erasure is safe, which this interface does not
@@ -579,7 +579,7 @@ INT mso_set_pod_seed(char *pSeed);
 *       sources of latency.
 * @note Thread safety is not provided. There is no requirement on an implementation to
 *       be thread safe, and the calling module is obliged to serialise its calls into
-*       this HAL (`Threading Model` in `docs/pages/halSpec.md`). The functions are
+*       this HAL (`Threading Model` in the HAL specification). The functions are
 *       expected to be reachable from several processes, so a vendor implementation
 *       must also protect shared state across process boundaries (`Process Model`). A
 *       retrieval concurrent with mso_set_pod_seed() is not ordered by this interface,

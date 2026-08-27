@@ -7,7 +7,15 @@
 | 2024-06-10 | Initial release. MSO HAL header migration to GitHub (RDKB-52500), refined against MTA HAL review comments. | 1.0.0 |
 | 2026-08-24 | Specification rebuilt against `include/mso_mgmt_hal.h`. A previously documented initialization and teardown lifecycle, its context handle type, and a device-status call were removed: this interface has never declared any of them. Canonical topic set completed. | Unreleased |
 
-**Provenance of this page.** It was renamed from `docs/pages/MsoMgmtHalSpec.md` to `docs/pages/halSpec.md` in the same change that rewrote it against the canonical topic set. Git records a rename only where the two versions still resemble each other, and a full rewrite does not, so `git log --follow -- docs/pages/halSpec.md` begins at that change: the revisions before it are reached with `git log -- docs/pages/MsoMgmtHalSpec.md`. That resemblance is measured, and the threshold is 50% by default, so lowering it to git's floor \- `git log --follow -M1% -- docs/pages/halSpec.md` \- is worth trying first: where it pairs the two paths it shows both stretches of history in one listing, and where the rewrite kept too little of the original for git to pair them at any threshold the second command above remains the only route to the earlier revisions.
+**Provenance of this page.** It was renamed from `docs/pages/MsoMgmtHalSpec.md` to the canonical `docs/pages/` specification page in the same change that rewrote it against the canonical topic set. Git records a rename only where the two versions still resemble each other, and a full rewrite does not, so a `--follow` listing of the canonical path begins at that change, and the revisions before it are reached by listing the legacy path instead:
+
+```sh
+git log --follow -- docs/pages/halSpec.md
+git log --follow -M1% -- docs/pages/halSpec.md
+git log -- docs/pages/MsoMgmtHalSpec.md
+```
+
+That resemblance is measured, and the threshold is 50% by default, so lowering it to git's floor with the second command above is worth trying first: where it pairs the two paths it shows both stretches of history in one listing, and where the rewrite kept too little of the original for git to pair them at any threshold the third command remains the only route to the earlier revisions.
 
 Four version identities apply to this repository and are deliberately kept apart, because conflating them misrepresents the interface:
 
@@ -16,7 +24,7 @@ Four version identities apply to this repository and are deliberately kept apart
 - **Generated-site version string** \- `docs/generate_docs.sh` derives `PROJECT_VERSION` from `git describe --tags` and passes it verbatim to the documentation generator, so the title of the generated site carries a string of the form `<tag>-<commits-since-tag>-g<abbreviated-commit>`: the `1.0.0` tag, the number of commits made since it, and an abbreviated commit hash. **No literal value for it is recorded here, because it advances with every commit** \- any value written into this document would be wrong from the next commit onward, and a stale one invites a reader to mistake a build coordinate for a release. It is a build identifier and not a version of either the interface or this document. A reader comparing two generated sites compares the tag portion and treats the suffix as a build coordinate.
 - **Interface version** \- **none exists.** This header defines no version macro, so a caller cannot query the interface version at compile time or at runtime. See `Variability Management`.
 
-*Derived from `CHANGELOG.md` (single `1.0.0` section, which carries no per-release date), the `1.0.0` tag's commit date, and `docs/generate_docs.sh`.*
+*Derived from the repository-root changelog (single `1.0.0` section, which carries no per-release date), the `1.0.0` tag's commit date, and `docs/generate_docs.sh`.*
 
 ## Acronyms
 
@@ -51,13 +59,13 @@ The declared contract is exactly three functions: one password validation call a
 
 **What this interface does not cover.** The header's file-level description frames the deployment context as broadband `DOCSIS` devices in `MSO` environments (`include/mso_mgmt_hal.h:22-30`) and then states its own scope limit: the interface states that "no declaration here provisions a device, reads or writes a data model, delivers an event notification, or performs any security operation other than validating a candidate password" (`:40-43`). That statement replaced an earlier description which had listed device provisioning and configuration, data-model read and write access, event notification and security management as capabilities of this HAL. **No declaration in this header implements any of those**, and the earlier wording was the single largest inaccuracy in this repository's documentation. A caller must take the three declarations as the whole of the contract and must not plan against the broader wording.
 
-*Derived from `include/mso_mgmt_hal.h:22-53, 387, 504, 620` for the interface, and the superproject `README.md:97` for the owning service.*
+*Derived from `include/mso_mgmt_hal.h:22-53, 387, 504, 620` for the interface, and line 97 of the superproject README for the owning service.*
 
 ## Optional Components
 
 The following are optional and at the vendor's discretion.
 
-- `rdkbEncryptedClientSeed` — `mso_get_pod_seed` is documented as retrieving the seed in decrypted form "either from the device configuration file or from the `rdkbEncryptedClientSeed` SNMP OID" (`include/mso_mgmt_hal.h:510-511`). Either source satisfies the contract; the interface does not select between them, and a caller cannot determine from the return value which one was used.
+- `rdkbEncryptedClientSeed` — `mso_get_pod_seed` is documented as retrieving the seed in decrypted form "either from the device configuration file or from the rdkbEncryptedClientSeed SNMP OID" — the header's own words (`include/mso_mgmt_hal.h:510-511`). Either source satisfies the contract; the interface does not select between them, and a caller cannot determine from the return value which one was used.
 - On-demand seed decryption — `mso_set_pod_seed` records that "on newer broadband devices the implementation is required to decrypt the seed on demand when this function is called" (`:397-399`). Whether decryption happens on demand is therefore a device-class-dependent implementation behavior rather than a property of every conforming implementation, and the header states that the interface gives a caller no way to determine which behavior it has.
 
 The interface declares **no optional functions**. All three declarations (`:387`, `:504`, `:620`) are unconditional, with no build-variability guard around any of them, so a conforming implementation exposes all three on every product.
@@ -258,7 +266,7 @@ The one variation the interface does record is implementation-side and invisible
 
 ## Interface API Documentation
 
-All HAL function prototypes and datatype definitions are available in the [`mso_mgmt_hal.h`](../../include/mso_mgmt_hal.h) file.
+All HAL function prototypes and datatype definitions are available in the `mso_mgmt_hal.h` file.
 
 1. Components/Processes must include `mso_mgmt_hal.h` to make use of MsoMgmt HAL capabilities.
 2. Components/Processes should add a linker dependency for `libhal_msomgmt.so`.
@@ -274,7 +282,7 @@ This interface exists so that RDK-B middleware can answer one question and maint
 Two concepts carry the whole contract:
 
 - **Password of the day** — a credential that is valid for the current day. `mso_validatepwd` "compares the value the caller supplies with the password that is valid for the MSO user for the current day, and returns a verdict" (`include/mso_mgmt_hal.h:271-272`). The interface exposes no way to read or generate the password itself; a caller can only submit a candidate and receive a verdict.
-- **`PoD` seed** — the value from which the daily password is generated. `mso_set_pod_seed` "configures the seed value from which the daily password for MSO users is generated" (`:392`), and `mso_get_pod_seed` "reads the PoD seed and writes it, decrypted, into the buffer the caller supplies" (`:509`). The derivation function itself is not part of this interface.
+- `PoD` seed — the value from which the daily password is generated. `mso_set_pod_seed` "configures the seed value from which the daily password for MSO users is generated" (`:392`), and `mso_get_pod_seed` "reads the PoD seed and writes it, decrypted, into the buffer the caller supplies" (`:509`). The derivation function itself is not part of this interface.
 
 The interface is a value-passing boundary, not an object model: three calls, caller-owned buffers, and a status per call.
 
@@ -317,7 +325,7 @@ The values a caller can observe are per-call results, not states: `mso_pwd_ret_s
 
 The types a caller must construct or interpret are listed below, each with the location of its declaration. This header declares **no structure type and no callback typedef**, so there is no caller-populated structure to describe and no registration function to list.
 
-**`mso_pwd_ret_status`** (`include/mso_mgmt_hal.h:200-269`) — a `typedef enum` and the return type of `mso_validatepwd`. It has **five** members:
+`mso_pwd_ret_status` (`include/mso_mgmt_hal.h:200-269`) — a `typedef enum` and the return type of `mso_validatepwd`. It has **five** members:
 
 | Member | Location | Meaning |
 | --- | --- | --- |
@@ -337,7 +345,7 @@ A caller must handle all five. The enumeration is the type's domain, and it is w
 | `RETURN_ERR` | `:137` | `-1` | Failure, for both seed accessors; the value both are documented against. |
 | `ERROR` | `:182` | `-1` | Defined here and numerically identical to `RETURN_ERR`; referenced by no declaration in this header. |
 
-**`SIZE_arrisCmDevHttpClientSeed`** (`:178`) — value `8L`. Two facts about it are recorded rather than reconciled, because reconciling either would require changing the interface and this change set is documentation only:
+`SIZE_arrisCmDevHttpClientSeed` (`:178`) — value `8L`. Two facts about it are recorded rather than reconciled, because reconciling either would require changing the interface and this change set is documentation only:
 
 - No declaration references it, and **the interface does not establish its relationship to the "at least 64 bytes" buffer requirement** the seed accessors state at `:403` and `:519`. A caller must size seed buffers from that requirement, not from this constant.
 - Its include guard is spelled `SIZE_arrisCmDevHttpClientSee` (`:177`), without the trailing `d`, so the guard does not name the macro it protects. A translation unit that pre-defines the macro under its correct name would therefore see it redefined here.
@@ -348,16 +356,16 @@ A caller must handle all five. The enumeration is the type's domain, and it is w
 
 ### API Surface
 
-Every function this interface declares is named below by exact identifier. This topic is the index of the interface: a reader who needs only an overview has it in `Description` and `Component Runtime Execution Requirements` above, while a reader with a specific question about a call starts here and follows the link into the declaration.
+Every function this interface declares is named below by exact identifier. This topic is the index of the interface: a reader who needs only an overview has it in `Description` and `Component Runtime Execution Requirements` above, while a reader with a specific question about a call starts here and follows the header and line reference into the declaration.
 
 **Password validation** — one call, returning the `mso_pwd_ret_status` enumeration:
 
-- `mso_validatepwd` — validates a caller-supplied password against the current MSO password of the day and returns an `mso_pwd_ret_status`. Declared at [`include/mso_mgmt_hal.h`](../../include/mso_mgmt_hal.h) `:387`.
+- `mso_validatepwd` — validates a caller-supplied password against the current MSO password of the day and returns an `mso_pwd_ret_status`. Declared at [include/mso_mgmt_hal.h](../../include/mso_mgmt_hal.h) line 387.
 
 **Password-of-the-Day seed** — two accessors, both returning the integer status domain:
 
-- `mso_set_pod_seed` — configures the `PoD` seed used to generate the daily password; returns `RETURN_OK` or `RETURN_ERR`. Declared at [`include/mso_mgmt_hal.h`](../../include/mso_mgmt_hal.h) `:504`.
-- `mso_get_pod_seed` — retrieves the decrypted `PoD` seed into a caller-supplied buffer that the caller must overwrite once it has finished with the value and the implementation's use of that buffer has ended; returns `RETURN_OK` or `RETURN_ERR`. Declared at [`include/mso_mgmt_hal.h`](../../include/mso_mgmt_hal.h) `:620`.
+- `mso_set_pod_seed` — configures the `PoD` seed used to generate the daily password; returns `RETURN_OK` or `RETURN_ERR`. Declared at [include/mso_mgmt_hal.h](../../include/mso_mgmt_hal.h) line 504.
+- `mso_get_pod_seed` — retrieves the decrypted `PoD` seed into a caller-supplied buffer that the caller must overwrite once it has finished with the value and the implementation's use of that buffer has ended; returns `RETURN_OK` or `RETURN_ERR`. Declared at [include/mso_mgmt_hal.h](../../include/mso_mgmt_hal.h) line 620.
 
 That is the complete surface. There is no initialization call, no teardown call, no device-status call, no data-model accessor and no notification registration in this interface.
 
