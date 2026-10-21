@@ -26,10 +26,9 @@
 The diagram below describes the high-level software architecture of the MsoMgmt HAL module stack.
 
 ```mermaid
-flowchart TD;
-    RDKBStack[RDK-B Stack] <--> CcspPandMSsp[CcspPandMSsp];
-    CcspPandMSsp <--> MsoHal["MsoMgmt HAL (libhal_msomgmt.so)"];
-    MsoHal <--> VendorSoftware[Vendor Software];
+flowchart TD
+    Caller["CcspPandMSsp"] <--> HAL["MsoMgmt HAL - mso_mgmt_hal.h"]
+    HAL <--> Vendor["Vendor Software"]
 ```
 
 The MsoMgmt HAL is the interface through which `CcspPandMSsp` validates an operator's **password of the day** and manages **the `PoD` seed** from which that password is derived. The `OEM` or third-party vendor supplies the implementation behind the interface.
