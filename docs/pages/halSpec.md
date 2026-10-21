@@ -19,7 +19,6 @@
 - `DOCSIS` \- Data Over Cable Service Interface Specification
 - `SNMP` \- Simple Network Management Protocol
 - `OID` \- Object Identifier
-- `SLA` \- Service Level Agreement
 
 ## Description
 
@@ -104,7 +103,7 @@ There are no asynchronous notifications; every result is returned by the call th
 
 ### Internal Error Handling
 
-**Synchronous Error Handling:** All APIs must return errors synchronously as a return value. This ensures immediate notification of errors to the caller.
+**Synchronous Error Handling:** All APIs must return errors synchronously as a return value.
 
 **Internal Error Reporting:** The HAL is responsible for reporting any internal system errors, such as out-of-memory conditions, through the return value. A failure value does not identify its cause, so a caller acts on the value itself:
 
@@ -118,7 +117,7 @@ There are no asynchronous notifications; every result is returned by the call th
 | `RETURN_ERR` | `mso_set_pod_seed` | Re-check the supplied seed and retry, and install a known seed before relying on validation again. |
 | `RETURN_ERR` | `mso_get_pod_seed` | Treat the seed as unavailable and do not read the buffer as a seed. |
 
-**Focus on Logging for Errors:** For system errors, the HAL should prioritize logging the error details for further investigation and resolution. A failure is logged by naming the operation and its return value.
+**Focus on Logging for Errors:** A failure is logged by naming the operation and its return value.
 
 ### Persistence Model
 
@@ -134,17 +133,7 @@ The component is required to record all errors and critical informative messages
 
 All HAL components must adhere to a consistent logging process. When logging is necessary, it should be performed into the `mso_vendor_hal.log` file, which is located in either the `/var/tmp/` or `/rdklogs/logs/` directories.
 
-Logs must be categorized according to the following log levels, as defined by the Linux standard logging system, listed here in descending order of severity:
-
-- **FATAL:** Critical conditions, typically indicating system crashes or severe failures that require immediate attention.
-- **ERROR:** Non-fatal error conditions that nonetheless significantly impede normal operation.
-- **WARNING:** Potentially harmful situations that do not yet represent errors.
-- **NOTICE:** Important but not error-level events.
-- **INFO:** General informational messages that highlight system operations.
-- **DEBUG:** Detailed information typically useful only when diagnosing problems.
-- **TRACE:** Very fine-grained logging to trace the internal flow of the system.
-
-Each log entry should include a timestamp, the log level, and a message describing the event or condition. This standard format will facilitate easier parsing and analysis of log files across different vendors and components.
+Log levels follow the Linux standard logging system, in descending order of severity: `FATAL`, `ERROR`, `WARNING`, `NOTICE`, `INFO`, `DEBUG` and `TRACE`. Each log entry carries a timestamp, the log level and a message describing the event or condition.
 
 Implementations must not log credentials, secrets, security-sensitive information, or other sensitive data. The rule applies at every log level, including `DEBUG` and `TRACE`, and equally to traces, error messages, crash dumps, support bundles and telemetry; it binds every caller of the interface as well. A message concerning a sensitive value names the operation and its outcome, never the value or any fragment, hash or length of it.
 
@@ -154,15 +143,13 @@ Vendors may allocate memory internally for their specific operational needs; `Me
 
 ### Quality Control
 
-To ensure the highest quality and reliability, it is strongly recommended that third-party quality assurance tools such as `Coverity`, `Black Duck` and `Valgrind` be employed to thoroughly analyze the implementation. The goal is to detect and resolve potential issues such as memory leaks, memory corruption, or other defects before deployment.
+An implementation should pass analysis with third-party tools such as `Coverity`, `Black Duck` and `Valgrind` without reported issues. Neither the HAL implementation nor the vendor software beneath it may introduce memory leaks or memory corruption.
 
-Furthermore, both the HAL wrapper and any third-party software interacting with it must prioritize robust memory management practices. This includes meticulous allocation, deallocation, and error handling to guarantee a stable and leak-free operation.
-
-Any change to a file listed under `Source References` obliges a review of this specification by the repository's code owner, `@rdkcentral/rdkb-hal-advisory`.
+Any change to a file listed under `Source References` obliges a review of this document by the repository's code owner, `@rdkcentral/rdkb-hal-advisory`.
 
 ### Licensing
 
-The implementation is expected to be released under the Apache License 2.0, the license the interface header carries.
+The interface definition is licensed under the Apache License 2.0, with the full text in `LICENSE` and the attribution notice in `NOTICE`. An implementation of this interface is expected to be released under the Apache License 2.0.
 
 ### Build Requirements
 
@@ -170,9 +157,7 @@ The source code should be capable of, but not be limited to, building under the 
 
 ### Variability Management
 
-The role of adjusting the interface, guided by versioning, rests solely within architecture requirements. Thereafter, vendors are obliged to align their implementation with a designated version of the interface. As per `SLA` terms, they may transition to newer versions based on demand needs.
-
-Each API interface will be versioned using [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html); the vendor code will comply with a specific version of the interface.
+Changes to the interface are controlled by versioning. Vendors implement a designated version of the interface and move to later versions as their service agreements require. Each interface version follows [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html), and vendor code complies with a specific version.
 
 ### Platform or Product Customization
 
@@ -193,8 +178,8 @@ This interface lets `CcspPandMSsp` check whether a password offered to the devic
 
 Two concepts carry the whole contract:
 
-- **Password of the day** — the credential valid for the `MSO` user for the current day. `mso_validatepwd` compares a caller-supplied candidate with it and returns a verdict; a caller can submit a candidate but cannot read or generate the password.
-- **The `PoD` seed** — the value from which the daily password is generated. `mso_set_pod_seed` installs it and `mso_get_pod_seed` returns it, decrypted, into a caller buffer. The derivation function is not part of this interface.
+- **Password of the day:** the credential valid for the `MSO` user for the current day. `mso_validatepwd` compares a caller-supplied candidate with it and returns a verdict; a caller can submit a candidate but cannot read or generate the password.
+- **The `PoD` seed:** the value from which the daily password is generated. `mso_set_pod_seed` installs it and `mso_get_pod_seed` returns it, decrypted, into a caller buffer. The derivation function is not part of this interface.
 
 Both values are credentials, and the seed is the more sensitive: every daily password derives from it.
 
@@ -226,7 +211,7 @@ The types and defines a caller interprets are listed below.
 | `Expired_PWD` | Password is expired. |
 | `TimeError` | A time-related error occurred during validation. |
 
-**Defines** — `RETURN_OK` and `RETURN_ERR` are the return domain of both seed accessors, which return `INT`:
+**Defines:** `RETURN_OK` and `RETURN_ERR` are the return domain of both seed accessors, which return `INT`:
 
 | Define | Value | Meaning |
 | --- | --- | --- |
@@ -236,17 +221,17 @@ The types and defines a caller interprets are listed below.
 | `SIZE_arrisCmDevHttpClientSeed` | `8L` | Legacy element count referenced by no declaration; seed buffers are sized from the 64-byte requirement, not from this constant. Its include guard is spelled `SIZE_arrisCmDevHttpClientSee`, so pre-defining the macro does not suppress this definition. |
 | `SEC_PER_YEAR` | `31536000` | Seconds in a 365-day year, provided for legacy callers. |
 
-**Compatibility aliases** — the guarded macros `CHAR`, `UCHAR`, `BOOLEAN`, `INT`, `UINT`, `ULONG`, `TRUE`, `FALSE` and `ENABLE`, and the typedefs `uint16`, `uint32` and `boolean`, exist for source and `ABI` compatibility with legacy RDK-B translation units; a guarded macro yields to a definition already in effect. Only `INT` appears in a declared signature, as the return type of both seed accessors.
+**Compatibility aliases:** the guarded macros `CHAR`, `UCHAR`, `BOOLEAN`, `INT`, `UINT`, `ULONG`, `TRUE`, `FALSE` and `ENABLE`, and the typedefs `uint16`, `uint32` and `boolean`, exist for source and `ABI` compatibility with legacy RDK-B translation units; a guarded macro yields to a definition already in effect. Only `INT` appears in a declared signature, as the return type of both seed accessors.
 
 ### API Surface
 
 Every function this interface declares is named below by exact identifier.
 
-**Password validation** — one call, returning the `mso_pwd_ret_status` enumeration:
+**Password validation:** one call, returning the `mso_pwd_ret_status` enumeration:
 
 - `mso_validatepwd` — validates a caller-supplied password against the current `MSO` password of the day.
 
-**Password-of-the-Day seed** — two accessors, both returning `RETURN_OK` or `RETURN_ERR`:
+**Password-of-the-day seed:** two accessors, both returning `RETURN_OK` or `RETURN_ERR`:
 
 - `mso_set_pod_seed` — installs the `PoD` seed used to generate the daily password.
 - `mso_get_pod_seed` — retrieves the decrypted `PoD` seed into a caller-supplied buffer.
@@ -290,3 +275,4 @@ No state diagram is drawn: the interface defines status values but no transition
 - [rdkcentral/rdkb-halif-mso/CHANGELOG.md](https://github.com/rdkcentral/rdkb-halif-mso/blob/develop/CHANGELOG.md) — release history recorded in `Version History`
 - [rdkcentral/rdkb-halif-mso/.github/CODEOWNERS](https://github.com/rdkcentral/rdkb-halif-mso/blob/develop/.github/CODEOWNERS) — code owner named under `Quality Control`
 - [rdkcentral/rdkb-halif-mso/LICENSE](https://github.com/rdkcentral/rdkb-halif-mso/blob/develop/LICENSE) — Apache License 2.0 text named under `Licensing`
+- [rdkcentral/rdkb-halif-mso/NOTICE](https://github.com/rdkcentral/rdkb-halif-mso/blob/develop/NOTICE) — attribution notice named under `Licensing`
