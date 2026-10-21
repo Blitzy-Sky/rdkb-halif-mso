@@ -32,7 +32,7 @@ flowchart TD;
     MsoHal <--> VendorSoftware[Vendor Software];
 ```
 
-The MsoMgmt HAL is the interface through which `CcspPandMSsp` validates an operator's **password of the day** and manages the **`PoD` seed** from which that password is derived. The `OEM` or third-party vendor supplies the implementation behind the interface.
+The MsoMgmt HAL is the interface through which `CcspPandMSsp` validates an operator's **password of the day** and manages **the `PoD` seed** from which that password is derived. The `OEM` or third-party vendor supplies the implementation behind the interface.
 
 The declared contract is exactly three functions: one password-validation call and two seed accessors, listed under `API Surface`. The header's file-level description of `DOCSIS` device management in `MSO` environments describes the deployment context only: no declaration provisions a device, reads or writes a data model, delivers an event notification, or performs any security operation other than validating a candidate password.
 
@@ -195,7 +195,7 @@ This interface lets `CcspPandMSsp` check whether a password offered to the devic
 Two concepts carry the whole contract:
 
 - **Password of the day** — the credential valid for the `MSO` user for the current day. `mso_validatepwd` compares a caller-supplied candidate with it and returns a verdict; a caller can submit a candidate but cannot read or generate the password.
-- **`PoD` seed** — the value from which the daily password is generated. `mso_set_pod_seed` installs it and `mso_get_pod_seed` returns it, decrypted, into a caller buffer. The derivation function is not part of this interface.
+- **The `PoD` seed** — the value from which the daily password is generated. `mso_set_pod_seed` installs it and `mso_get_pod_seed` returns it, decrypted, into a caller buffer. The derivation function is not part of this interface.
 
 Both values are credentials, and the seed is the more sensitive: every daily password derives from it.
 
