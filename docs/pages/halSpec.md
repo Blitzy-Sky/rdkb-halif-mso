@@ -211,7 +211,7 @@ The interface requires no call order. The relationship between the calls is logi
 
 #### State-Dependent Behavior
 
-Behavior does not depend on state: the interface defines no device, session or connection state, and each return value describes only the call that produced it.
+The `mso_validatepwd` verdict depends on the `PoD` seed installed through `mso_set_pod_seed` and on the current device time: a recognised candidate that is no longer valid for the current day yields `Expired_PWD`, and a time-related failure such as an unsynchronised device clock yields `TimeError`. Neither dependency is exposed as a state with defined transitions; `State Diagram` lists the status values a caller can observe.
 
 ### Data Structures and Defines
 
