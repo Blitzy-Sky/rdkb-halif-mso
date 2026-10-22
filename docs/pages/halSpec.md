@@ -103,9 +103,7 @@ There are no asynchronous notifications; every result is returned by the call th
 
 ### Internal Error Handling
 
-**Synchronous Error Handling:** All APIs must return errors synchronously as a return value.
-
-**Internal Error Reporting:** The HAL is responsible for reporting any internal system errors, such as out-of-memory conditions, through the return value. A failure value does not identify its cause, so a caller acts on the value itself:
+A failure value does not identify its cause, so a caller acts on the value itself:
 
 | Return value | Returned by | Caller action |
 | --- | --- | --- |
@@ -116,8 +114,6 @@ There are no asynchronous notifications; every result is returned by the call th
 | `RETURN_OK` | `mso_set_pod_seed`, `mso_get_pod_seed` | Proceed. |
 | `RETURN_ERR` | `mso_set_pod_seed` | Re-check the supplied seed and retry, and install a known seed before relying on validation again. |
 | `RETURN_ERR` | `mso_get_pod_seed` | Treat the seed as unavailable and do not read the buffer as a seed. |
-
-**Focus on Logging for Errors:** A failure is logged by naming the operation and its return value.
 
 ### Persistence Model
 
