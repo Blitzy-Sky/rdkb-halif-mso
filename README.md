@@ -1,1 +1,1 @@
-docs/pages/MsoMgmtHalSpec.md
+docs/pages/halSpec.md
