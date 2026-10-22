@@ -256,8 +256,6 @@ sequenceDiagram
     HAL-->>Caller: mso_pwd_ret_status
 ```
 
-Mermaid diagrams render on GitHub, where `README.md` presents this page; the generated Doxygen site shows their source text.
-
 ### State Diagram
 
 No state diagram is drawn: the interface defines status values but no transitions between them. The values a caller can observe are:
