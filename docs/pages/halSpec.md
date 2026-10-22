@@ -141,7 +141,7 @@ Vendors may allocate memory internally for their specific operational needs; `Me
 
 An implementation should pass analysis with third-party tools such as `Coverity`, `Black Duck` and `Valgrind` without reported issues. Neither the HAL implementation nor the vendor software beneath it may introduce memory leaks or memory corruption.
 
-Any change to a file listed under `Source References` obliges a review of this document by the repository's code owner, `@rdkcentral/rdkb-hal-advisory`.
+Any change to a file listed under `Source References` obliges a review of this document by the code owner listed in `.github/CODEOWNERS`.
 
 ### Licensing
 
